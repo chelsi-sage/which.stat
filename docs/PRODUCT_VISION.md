@@ -34,6 +34,12 @@ decision-tree questions for them. Crucially, AI only *classifies and selects* â€
 the statistics themselves are always run by pre-approved deterministic code
 (see [ARCHITECTURE.md](ARCHITECTURE.md)).
 
+### Offline / online split
+The **guided decision tree works fully offline** â€” that's the PWA's core promise.
+The **AI features (data upload + data-typing) work online only**, since they need
+to reach a model. Offline, the app clearly flags AI features as unavailable while
+the decision tree keeps working.
+
 ## Non-goals (v1)
 
 To keep scope honest, v1 will **not**:

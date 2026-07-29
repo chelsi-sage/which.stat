@@ -50,6 +50,19 @@ draw a hard line between the two.
                              Result
 ```
 
+## Offline vs. online
+
+The two layers have different connectivity needs, and that's by design:
+
+- **Guided decision tree — works fully offline.** The core value (answering
+  questions and getting a recommendation from the deterministic stats engine)
+  requires no network. This is the offline promise of the PWA.
+- **AI features — online only.** Data upload and AI data-typing need a network
+  connection to reach the model. When offline, these features are unavailable and
+  the app clearly says so; the decision tree still works.
+
+So: **the app is useful with no internet; the AI features are a connected bonus.**
+
 ## Why this matters
 
 - **No hallucinated numbers.** The maths can't be made up because AI never runs it.

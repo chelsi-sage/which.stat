@@ -7,6 +7,20 @@ we considered instead. Newest entries at the top. Keep entries short.
 
 ---
 
+### 2026-07-29 — Offline/online split
+
+The **guided decision tree works fully offline**; the **AI features (data upload
++ data-typing) work online only**.
+
+- *Why:* the decision tree is the core value and needs no network, so it honours
+  the PWA's offline promise. AI data-typing must reach a model, so it can't work
+  offline. Offline, the app flags AI features as unavailable but the tree still
+  works.
+- *Alternatives:* require connectivity for everything (breaks offline promise);
+  try to run AI on-device (out of scope / too heavy for now).
+
+---
+
 ### 2026-07-29 — Foundation decisions (project kickoff)
 
 The following were all decided in the kickoff conversation.
