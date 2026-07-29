@@ -1,0 +1,32 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 40rem;
+  padding: 3rem 1.5rem;
+}
+
+.app h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.tagline {
+  font-size: 1.125rem;
+  opacity: 0.85;
+}
+
+.status {
+  opacity: 0.6;
+  font-style: italic;
+}
