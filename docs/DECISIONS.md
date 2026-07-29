@@ -7,6 +7,21 @@ we considered instead. Newest entries at the top. Keep entries short.
 
 ---
 
+### 2026-07-29 — Phase 1 kickoff: first branch, source, toolchain
+
+- **First decision branch:** comparing two groups (t-test family) — most common
+  for PM A/B testing, small scope, easy to cite.
+- **Source of truth:** Field, *Discovering Statistics Using IBM SPSS Statistics*
+  (SAGE). Every recommendation traces to it.
+- **Toolchain:** scaffolded React 19 + TypeScript 6 + Vite 8 + Vitest 4 (+ oxlint).
+- **SPEC-001 approved & built** ([specs/SPEC-001-comparing-two-groups.md](specs/SPEC-001-comparing-two-groups.md)):
+  a pure `recommendTwoGroupTest` function that recommends independent/paired
+  t-test or Mann–Whitney/Wilcoxon, and honestly returns "not covered yet" for
+  non-continuous outcomes. Built spec-first with Red-Green TDD; 5 worked examples
+  pass. This slice only *recommends* a test — it does not run the maths.
+
+---
+
 ### 2026-07-29 — Offline/online split
 
 The **guided decision tree works fully offline**; the **AI features (data upload
