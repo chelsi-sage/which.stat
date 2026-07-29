@@ -6,7 +6,9 @@ export default defineConfig({
   plugins: [react()],
   test: {
     // Statistical logic is pure TypeScript, so the default Node environment is
-    // all we need. Component tests (later) can opt into jsdom per-file.
+    // all we need. Component tests opt into jsdom per-file via a
+    // `// @vitest-environment jsdom` docblock.
     environment: 'node',
+    setupFiles: ['./src/test/setup.ts'],
   },
 })

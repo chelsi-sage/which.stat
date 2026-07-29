@@ -7,6 +7,21 @@ we considered instead. Newest entries at the top. Keep entries short.
 
 ---
 
+### 2026-07-29 — SPEC-002 built: two-group questionnaire UI
+
+- **Guided wizard** (one question per screen) wired to `recommendTwoGroupTest`;
+  the UI never decides the test itself. Built spec-first with Red-Green TDD.
+- **Chelsi's tweaks applied:** collapsible "what this test does & what it means"
+  on the result; a greyed-out "Not sure" option on the two data-nature questions
+  (will route to AI later); Open Sans, background `#D8BFD8`, text `#17191c`;
+  radio-button options.
+- **Open Sans self-hosted** via `@fontsource/open-sans` so it works offline
+  (a CDN link would break the offline promise).
+- Added dev deps @testing-library/react + jsdom (approved) for 4 happy-path UI
+  tests. Full suite: 11 tests passing; build + lint clean; dev server boots.
+
+---
+
 ### 2026-07-29 — Phase 1 kickoff: first branch, source, toolchain
 
 - **First decision branch:** comparing two groups (t-test family) — most common
