@@ -1,5 +1,6 @@
 import { loadPyodide, version, type PyodideInterface } from 'pyodide'
 import type { IndependentTResult } from './verdict'
+import type { NormalityResult } from './normality'
 // The exact Python the user validates with pytest — run unchanged in the browser.
 import twoGroupSource from '../../stats_engine/two_group.py?raw'
 
@@ -39,4 +40,18 @@ export async function runIndependentTTest(
     'import json; json.dumps(independent_t_test(_a, _b))',
   ) as string
   return JSON.parse(json) as IndependentTResult
+}
+
+/** Run the Shapiro-Wilk normality check on two numeric arrays via the engine. */
+export async function runNormalityCheck(
+  groupA: number[],
+  groupB: number[],
+): Promise<NormalityResult> {
+  const py = await getPyodide()
+  py.globals.set('_a', py.toPy(groupA))
+  py.globals.set('_b', py.toPy(groupB))
+  const json = py.runPython(
+    'import json; json.dumps(normality_check(_a, _b))',
+  ) as string
+  return JSON.parse(json) as NormalityResult
 }

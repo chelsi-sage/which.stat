@@ -1,18 +1,24 @@
 import { useState } from 'react'
-import { parseCsv, type ParsedCsv } from '../engine/csv'
+import type { Dataset } from '../engine/dataset'
 import { prepareIndependentTTest } from '../engine/prepareIndependentTTest'
 import { independentTVerdict, type IndependentTResult } from '../engine/verdict'
 import { runIndependentTTest } from '../engine/pyodideRunner'
+import { DatasetPicker } from './DatasetPicker'
 
 type Status = 'idle' | 'running' | 'done' | 'error'
 
 // Which recommended tests currently have a working engine.
 const ENGINE_READY = new Set(['independent_t_test'])
 
-export function DataUploadPanel({ testId }: { testId: string }) {
-  const [parsed, setParsed] = useState<ParsedCsv | null>(null)
-  const [groupCol, setGroupCol] = useState('')
-  const [outcomeCol, setOutcomeCol] = useState('')
+export function DataUploadPanel({
+  testId,
+  dataset,
+  onDataset,
+}: {
+  testId: string
+  dataset: Dataset | null
+  onDataset: (d: Dataset | null) => void
+}) {
   const [status, setStatus] = useState<Status>('idle')
   const [result, setResult] = useState<IndependentTResult | null>(null)
   const [verdict, setVerdict] = useState('')
@@ -30,27 +36,13 @@ export function DataUploadPanel({ testId }: { testId: string }) {
     )
   }
 
-  async function onFile(file: File) {
-    setStatus('idle')
-    setResult(null)
-    setVerdict('')
-    setWarnings([])
-    setMessage('')
-    const text = await file.text()
-    const p = parseCsv(text)
-    if (p.headers.length < 2) {
-      setStatus('error')
-      setMessage('That file needs at least two columns (a group and an outcome).')
-      return
-    }
-    setParsed(p)
-    setGroupCol(p.headers[0])
-    setOutcomeCol(p.headers[1])
-  }
-
   async function onRun() {
-    if (!parsed) return
-    const prep = prepareIndependentTTest(parsed.rows, groupCol, outcomeCol)
+    if (!dataset) return
+    const prep = prepareIndependentTTest(
+      dataset.parsed.rows,
+      dataset.groupColumn,
+      dataset.outcomeColumn,
+    )
     if (!prep.ok) {
       setStatus('error')
       setMessage(prep.error)
@@ -74,48 +66,12 @@ export function DataUploadPanel({ testId }: { testId: string }) {
     <div className="upload-panel">
       <h3>Run this test on your data</h3>
 
-      <label className="file-field">
-        <span>Choose a CSV file</span>
-        <input
-          type="file"
-          accept=".csv,text/csv"
-          onChange={(e) => {
-            const f = e.target.files?.[0]
-            if (f) void onFile(f)
-          }}
-        />
-      </label>
+      <DatasetPicker dataset={dataset} onDataset={onDataset} />
 
-      {parsed && (
-        <div className="mapping">
-          <label>
-            <span>Which column is the group?</span>
-            <select value={groupCol} onChange={(e) => setGroupCol(e.target.value)}>
-              {parsed.headers.map((h) => (
-                <option key={h} value={h}>
-                  {h}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <span>Which column is the outcome (the numbers)?</span>
-            <select
-              value={outcomeCol}
-              onChange={(e) => setOutcomeCol(e.target.value)}
-            >
-              {parsed.headers.map((h) => (
-                <option key={h} value={h}>
-                  {h}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <button type="button" className="primary" onClick={() => void onRun()}>
-            Run test
-          </button>
-        </div>
+      {dataset && (
+        <button type="button" className="primary" onClick={() => void onRun()}>
+          Run test
+        </button>
       )}
 
       {status === 'running' && (

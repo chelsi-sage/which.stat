@@ -7,6 +7,23 @@ we considered instead. Newest entries at the top. Keep entries short.
 
 ---
 
+### 2026-07-30 — SPEC-005 built: "Not sure" → upload → assumption check
+
+- The greyed-out **"Not sure"** became **"Not sure — help me figure it out"** and
+  is now **active on the distribution question for different groups**. It uploads
+  data and runs **Shapiro-Wilk per group** to help answer the normality question.
+- **Chelsi's tweaks:** uploaded data **persists across the whole tree** (lifted to
+  wizard-level `dataset`, shared via a new `DatasetPicker` used by both the check
+  screen and the result-screen run — no re-upload); the check **shows the numbers,
+  explains them, recommends an answer, but the user makes the final call**.
+- Scope kept small: normality/different-groups only. Q1, paired normality, and
+  small-sample "Not sure" stay "coming soon" (same mechanism, later).
+- Verified: 10 pytest (incl. normality golden cases) + 30 Vitest; Node Pyodide
+  smoke confirmed the normality path (skewed group p≈1e-7 → not normal); build +
+  lint clean.
+
+---
+
 ### 2026-07-30 — SPEC-004 built: deterministic stats engine + data upload
 
 - **Python stats engine in `stats_engine/`** (scipy), run in the browser via

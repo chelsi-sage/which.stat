@@ -51,6 +51,35 @@ def independent_t_test(group_a: list[float], group_b: list[float]) -> dict:
     }
 
 
+def normality_check(group_a: list[float], group_b: list[float]) -> dict:
+    """Shapiro-Wilk normality test on each of two groups.
+
+    Used to help a user answer "is my data roughly normally distributed?" when
+    they aren't sure. Reports each group's W statistic and p-value, and an overall
+    ``normal`` flag that is True only when BOTH groups have p >= 0.05.
+
+    Args:
+        group_a: outcome values for the first group.
+        group_b: outcome values for the second group.
+
+    Returns:
+        A dict: ``{"group_a": {"w", "p", "n"}, "group_b": {...}, "normal": bool}``.
+
+    Raises:
+        ValueError: if either group has fewer than three values (Shapiro's minimum).
+    """
+    if len(group_a) < 3 or len(group_b) < 3:
+        raise ValueError("each group needs at least three values for Shapiro-Wilk")
+
+    a = stats.shapiro(group_a)
+    b = stats.shapiro(group_b)
+    return {
+        "group_a": {"w": float(a.statistic), "p": float(a.pvalue), "n": len(group_a)},
+        "group_b": {"w": float(b.statistic), "p": float(b.pvalue), "n": len(group_b)},
+        "normal": bool(a.pvalue >= 0.05 and b.pvalue >= 0.05),
+    }
+
+
 def _cohens_d(group_a: list[float], group_b: list[float]) -> float:
     """Cohen's d using the pooled standard deviation."""
     n_a = len(group_a)

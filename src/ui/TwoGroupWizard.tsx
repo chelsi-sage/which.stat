@@ -7,8 +7,14 @@ import {
 } from '../domain/recommendTwoGroupTest'
 import { testExplanations } from './testExplanations'
 import { DataUploadPanel } from './DataUploadPanel'
+import { AssumptionCheckScreen } from './AssumptionCheckScreen'
+import type { Dataset } from '../engine/dataset'
 
-type Step = 'start' | 'q1' | 'q2' | 'q3' | 'qSmall' | 'result'
+type Step = 'start' | 'q1' | 'q2' | 'q3' | 'qSmall' | 'checkNormality' | 'result'
+
+// How the "Not sure" option behaves on a question: not shown, greyed-out
+// "coming soon", or an active "help me figure it out" that runs a data check.
+type NotSureMode = 'hidden' | 'disabled' | 'active'
 
 interface Option {
   label: string
@@ -16,15 +22,16 @@ interface Option {
 }
 
 // A single question screen: legend, radio options, a collapsible explainer,
-// an optional disabled "Not sure" (routes to AI later), and a Back button.
+// an optional "Not sure" (disabled or active), and a Back button.
 function QuestionScreen(props: {
   legend: string
   explanation: string
   name: string
   options: Option[]
   currentValue?: string
-  showNotSure: boolean
+  notSure: NotSureMode
   onSelect: (value: string) => void
+  onNotSure?: () => void
   onBack: () => void
 }) {
   return (
@@ -50,11 +57,23 @@ function QuestionScreen(props: {
           </label>
         ))}
 
-        {props.showNotSure && (
+        {props.notSure === 'active' && (
+          <label className="option">
+            <input
+              type="radio"
+              name={props.name}
+              onChange={() => props.onNotSure?.()}
+              onClick={() => props.onNotSure?.()}
+            />
+            <span>Not sure — help me figure it out</span>
+          </label>
+        )}
+
+        {props.notSure === 'disabled' && (
           <label className="option option--disabled">
             <input type="radio" name={props.name} disabled />
             <span>
-              Not sure <em>(coming soon — AI will help you decide)</em>
+              Not sure <em>(coming soon)</em>
             </span>
           </label>
         )}
@@ -71,10 +90,13 @@ export function TwoGroupWizard() {
   const [step, setStep] = useState<Step>('start')
   const [answers, setAnswers] = useState<Partial<TwoGroupAnswers>>({})
   const [showUpload, setShowUpload] = useState(false)
+  // Uploaded data persists across the whole tree — see SPEC-005.
+  const [dataset, setDataset] = useState<Dataset | null>(null)
 
   function reset() {
     setAnswers({})
     setShowUpload(false)
+    setDataset(null)
     setStep('start')
   }
 
@@ -134,7 +156,7 @@ export function TwoGroupWizard() {
             { label: 'No', value: 'no' },
           ]}
           currentValue={answers.outcomeContinuous}
-          showNotSure
+          notSure="disabled"
           onSelect={answerQ1}
           onBack={reset}
         />
@@ -154,7 +176,7 @@ export function TwoGroupWizard() {
             { label: 'Same people/items, measured twice', value: 'same' },
           ]}
           currentValue={answers.sameEntities}
-          showNotSure={false}
+          notSure="hidden"
           onSelect={answerQ2}
           onBack={() => setStep('q1')}
         />
@@ -174,8 +196,9 @@ export function TwoGroupWizard() {
             { label: 'No', value: 'no' },
           ]}
           currentValue={answers.assumptionsMet}
-          showNotSure
+          notSure={answers.sameEntities === 'different' ? 'active' : 'disabled'}
           onSelect={answerQ3}
+          onNotSure={() => setStep('checkNormality')}
           onBack={() => setStep('q2')}
         />
       </section>
@@ -194,9 +217,25 @@ export function TwoGroupWizard() {
             { label: 'No', value: 'no' },
           ]}
           currentValue={answers.smallSample}
-          showNotSure
+          notSure="disabled"
           onSelect={answerQSmall}
           onBack={() => setStep('q2')}
+        />
+      </section>
+    )
+  }
+
+  if (step === 'checkNormality') {
+    return (
+      <section className="card">
+        <AssumptionCheckScreen
+          dataset={dataset}
+          onDataset={setDataset}
+          onResolved={(answer) => {
+            setAnswers((a) => ({ ...a, assumptionsMet: answer }))
+            setStep('result')
+          }}
+          onBack={() => setStep('q3')}
         />
       </section>
     )
@@ -237,7 +276,13 @@ export function TwoGroupWizard() {
         </button>
       )}
 
-      {rec.covered && showUpload && <DataUploadPanel testId={rec.testId} />}
+      {rec.covered && showUpload && (
+        <DataUploadPanel
+          testId={rec.testId}
+          dataset={dataset}
+          onDataset={setDataset}
+        />
+      )}
     </section>
   )
 }
