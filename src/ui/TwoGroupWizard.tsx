@@ -272,7 +272,11 @@ export function TwoGroupWizard() {
           className="secondary"
           onClick={() => setShowUpload((s) => !s)}
         >
-          {showUpload ? 'Hide data upload' : 'Upload data'}
+          {showUpload
+            ? 'Hide data upload'
+            : dataset
+              ? 'Run test on uploaded data'
+              : 'Upload data'}
         </button>
       )}
 
