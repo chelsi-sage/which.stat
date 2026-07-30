@@ -7,7 +7,7 @@ import {
 } from '../domain/recommendTwoGroupTest'
 import { testExplanations } from './testExplanations'
 
-type Step = 'start' | 'q1' | 'q2' | 'q3' | 'result'
+type Step = 'start' | 'q1' | 'q2' | 'q3' | 'qSmall' | 'result'
 
 interface Option {
   label: string
@@ -78,16 +78,29 @@ export function TwoGroupWizard() {
   function answerQ1(value: string) {
     const v = value as YesNo
     setAnswers((a) => ({ ...a, outcomeContinuous: v }))
-    setStep(v === 'no' ? 'result' : 'q2')
+    // Both continuous and categorical branches next ask same/different (Q2).
+    setStep('q2')
   }
 
   function answerQ2(value: string) {
-    setAnswers((a) => ({ ...a, sameEntities: value as Entities }))
-    setStep('q3')
+    const v = value as Entities
+    setAnswers((a) => ({ ...a, sameEntities: v }))
+    if (answers.outcomeContinuous === 'yes') {
+      setStep('q3') // continuous branch → distribution question
+    } else {
+      // categorical branch: different groups → small-sample question;
+      // same entities → McNemar (straight to result).
+      setStep(v === 'different' ? 'qSmall' : 'result')
+    }
   }
 
   function answerQ3(value: string) {
     setAnswers((a) => ({ ...a, assumptionsMet: value as YesNo }))
+    setStep('result')
+  }
+
+  function answerQSmall(value: string) {
+    setAnswers((a) => ({ ...a, smallSample: value as YesNo }))
     setStep('result')
   }
 
@@ -160,6 +173,26 @@ export function TwoGroupWizard() {
           currentValue={answers.assumptionsMet}
           showNotSure
           onSelect={answerQ3}
+          onBack={() => setStep('q2')}
+        />
+      </section>
+    )
+  }
+
+  if (step === 'qSmall') {
+    return (
+      <section className="card">
+        <QuestionScreen
+          legend="Is your dataset small — are any of your categories likely to contain only a handful of responses (roughly 5 or fewer)?"
+          explanation="The chi-square test needs a reasonable number of responses in each category to be reliable. If some categories are nearly empty, a test built for small samples (Fisher’s exact) is safer."
+          name="qSmall"
+          options={[
+            { label: 'Yes', value: 'yes' },
+            { label: 'No', value: 'no' },
+          ]}
+          currentValue={answers.smallSample}
+          showNotSure
+          onSelect={answerQSmall}
           onBack={() => setStep('q2')}
         />
       </section>

@@ -44,9 +44,39 @@ describe('recommendTwoGroupTest (SPEC-001)', () => {
     expect(rec.covered).toBe(true)
   })
 
-  it('non-continuous outcome → not covered yet', () => {
+  it('categorical outcome without enough info → not covered', () => {
     const rec = recommendTwoGroupTest({ outcomeContinuous: 'no' })
     expect(rec.covered).toBe(false)
+  })
+
+  // SPEC-003 — categorical outcome (chi-square family).
+  it('categorical + different groups + not small → chi-square test of independence', () => {
+    const rec = recommendTwoGroupTest({
+      outcomeContinuous: 'no',
+      sameEntities: 'different',
+      smallSample: 'no',
+    })
+    expect(rec.testId).toBe('chi_square_independence')
+    expect(rec.covered).toBe(true)
+  })
+
+  it('categorical + different groups + small sample → Fisher’s exact test', () => {
+    const rec = recommendTwoGroupTest({
+      outcomeContinuous: 'no',
+      sameEntities: 'different',
+      smallSample: 'yes',
+    })
+    expect(rec.testId).toBe('fishers_exact')
+    expect(rec.covered).toBe(true)
+  })
+
+  it('categorical + same entities → McNemar’s test', () => {
+    const rec = recommendTwoGroupTest({
+      outcomeContinuous: 'no',
+      sameEntities: 'same',
+    })
+    expect(rec.testId).toBe('mcnemar')
+    expect(rec.covered).toBe(true)
   })
 
   it('every recommendation carries a rationale and a citation', () => {

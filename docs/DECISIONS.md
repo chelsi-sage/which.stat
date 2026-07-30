@@ -7,6 +7,20 @@ we considered instead. Newest entries at the top. Keep entries short.
 
 ---
 
+### 2026-07-30 — SPEC-003 built: categorical-outcome (chi-square) branch
+
+- The "No, my outcome isn't continuous" answer now continues into a categorical
+  branch instead of dead-ending at "not covered yet".
+- **Full Fisher's branch** (Chelsi's choice): different groups → chi-square test
+  of independence, or Fisher's exact test when the sample is small (new
+  "small sample?" question); same entities → McNemar's test.
+- **McNemar assumes a two-category outcome** — noted in its rationale/explanation
+  rather than silently mis-recommending for 3+ category paired outcomes.
+- Built spec-first with Red-Green TDD. Suite now 15 tests; build + lint clean.
+- Still recommend-only — no maths run. Source: Field, *Discovering Statistics*.
+
+---
+
 ### 2026-07-29 — SPEC-002 built: two-group questionnaire UI
 
 - **Guided wizard** (one question per screen) wired to `recommendTwoGroupTest`;

@@ -13,6 +13,8 @@ export interface TwoGroupAnswers {
   sameEntities?: Entities
   /** Is the data roughly normally distributed (bell-shaped, no big outliers)? */
   assumptionsMet?: YesNo
+  /** Categorical branch only: are some categories likely to have very few (~5-) responses? */
+  smallSample?: YesNo
 }
 
 export interface Recommendation {
@@ -31,17 +33,9 @@ export interface Recommendation {
 const CITATION = 'Field, Discovering Statistics Using IBM SPSS Statistics (SAGE)'
 
 export function recommendTwoGroupTest(answers: TwoGroupAnswers): Recommendation {
-  // Gate: this slice only covers continuous outcomes.
-  if (answers.outcomeContinuous !== 'yes') {
-    return {
-      testId: 'not_covered',
-      testName: 'Not covered yet',
-      rationale:
-        'Comparing two groups on a non-continuous (categorical) outcome is not ' +
-        'covered yet — a chi-square branch is planned for a later slice.',
-      citation: CITATION,
-      covered: false,
-    }
+  // Categorical outcome → chi-square family (SPEC-003).
+  if (answers.outcomeContinuous === 'no') {
+    return recommendCategorical(answers)
   }
 
   const independent = answers.sameEntities === 'different'
@@ -89,6 +83,60 @@ export function recommendTwoGroupTest(answers: TwoGroupAnswers): Recommendation 
     rationale:
       'The same entities measured twice with a continuous outcome that is not ' +
       'bell-shaped call for the non-parametric Wilcoxon signed-rank test.',
+    citation: CITATION,
+    covered: true,
+  }
+}
+
+// SPEC-003 — categorical outcome (chi-square family).
+function recommendCategorical(answers: TwoGroupAnswers): Recommendation {
+  // Need to know whether the two sets come from the same or different entities.
+  if (answers.sameEntities === undefined) {
+    return {
+      testId: 'not_covered',
+      testName: 'Not covered yet',
+      rationale:
+        'To recommend a test for a categorical outcome we still need to know ' +
+        'whether the two sets of results come from the same or different entities.',
+      citation: CITATION,
+      covered: false,
+    }
+  }
+
+  // Same entities measured twice → McNemar's test (assumes a two-category outcome).
+  if (answers.sameEntities === 'same') {
+    return {
+      testId: 'mcnemar',
+      testName: "McNemar's test",
+      rationale:
+        'The same entities measured twice on a yes/no categorical outcome call ' +
+        "for McNemar's test (it assumes a two-category outcome).",
+      citation: CITATION,
+      covered: true,
+    }
+  }
+
+  // Different groups + small sample → Fisher's exact test.
+  if (answers.smallSample === 'yes') {
+    return {
+      testId: 'fishers_exact',
+      testName: "Fisher's exact test",
+      rationale:
+        'Two different groups on a categorical outcome with a small sample call ' +
+        "for Fisher's exact test, which stays reliable when categories have few " +
+        'responses.',
+      citation: CITATION,
+      covered: true,
+    }
+  }
+
+  // Different groups + adequate sample → chi-square test of independence.
+  return {
+    testId: 'chi_square_independence',
+    testName: 'Chi-square test of independence',
+    rationale:
+      'Two different groups on a categorical outcome with an adequate sample ' +
+      'point to the chi-square test of independence.',
     citation: CITATION,
     covered: true,
   }

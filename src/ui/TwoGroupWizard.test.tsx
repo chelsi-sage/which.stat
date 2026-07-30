@@ -21,15 +21,30 @@ describe('TwoGroupWizard (SPEC-002)', () => {
     ).toBeInTheDocument()
   })
 
-  it('non-continuous outcome → shows the honest "not covered yet" result', async () => {
+  it('categorical + different + not small → recommends chi-square test of independence', async () => {
     const user = userEvent.setup()
     render(<TwoGroupWizard />)
 
     await user.click(screen.getByRole('button', { name: /start/i }))
-    await user.click(screen.getByLabelText('No', { exact: true })) // Q1: not continuous
+    await user.click(screen.getByLabelText('No', { exact: true })) // Q1: categorical
+    await user.click(screen.getByLabelText(/different/i)) // Q2: different groups
+    await user.click(screen.getByLabelText('No', { exact: true })) // small sample? No
 
     expect(
-      screen.getByRole('heading', { name: /not covered yet/i }),
+      screen.getByRole('heading', { name: /chi-square test of independence/i }),
+    ).toBeInTheDocument()
+  })
+
+  it('categorical + same entities → recommends McNemar’s test', async () => {
+    const user = userEvent.setup()
+    render(<TwoGroupWizard />)
+
+    await user.click(screen.getByRole('button', { name: /start/i }))
+    await user.click(screen.getByLabelText('No', { exact: true })) // Q1: categorical
+    await user.click(screen.getByLabelText(/same/i)) // Q2: same entities
+
+    expect(
+      screen.getByRole('heading', { name: /mcnemar/i }),
     ).toBeInTheDocument()
   })
 

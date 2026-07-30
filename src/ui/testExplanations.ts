@@ -20,6 +20,20 @@ export const testExplanations: Record<string, string> = {
     'It compares the two measurements from the same people or items using ranked ' +
     'differences rather than averages, so it works when the data is not ' +
     'bell-shaped. A small p-value suggests a real change.',
+  chi_square_independence:
+    'It checks whether which group someone is in is associated with the ' +
+    'category they fall into (for example, whether group membership relates to ' +
+    'converting or not). A small p-value (usually below 0.05) suggests the two ' +
+    'are related rather than independent.',
+  fishers_exact:
+    'It answers the same question as the chi-square test — is group membership ' +
+    'linked to the outcome — but calculates exact probabilities, so it stays ' +
+    'reliable when your sample is small. A small p-value suggests a real link.',
+  mcnemar:
+    'It looks at how many of the same people/items changed category between the ' +
+    'two measurements (for example, from “no” to “yes”) and checks whether that ' +
+    'change is bigger than chance. It assumes a two-category (yes/no) outcome. A ' +
+    'small p-value suggests a real change.',
   not_covered:
     'This situation is not covered yet. A branch for categorical outcomes (like ' +
     '“clicked / didn’t click”) is planned for a later update.',
