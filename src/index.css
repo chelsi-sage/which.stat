@@ -141,3 +141,92 @@ button {
   opacity: 0.75;
   margin-top: 1rem;
 }
+
+.secondary {
+  background: transparent;
+  color: var(--fg);
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  margin: 1rem 0 0 0.5rem;
+}
+
+.upload-panel {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(23, 25, 28, 0.2);
+}
+
+.upload-panel h3 {
+  margin: 0 0 0.75rem;
+}
+
+.file-field,
+.mapping label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.9rem;
+}
+
+.mapping select {
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--fg);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.coming-soon,
+.engine-loading {
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.engine-error {
+  color: #7a1020;
+  font-weight: 600;
+}
+
+.run-result {
+  margin-top: 1rem;
+}
+
+.verdict {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.numbers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 1rem;
+  margin: 1rem 0;
+}
+
+.numbers div {
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.numbers dt {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.numbers dd {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.warnings {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.engine-note {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}

@@ -6,6 +6,7 @@ import {
   type Entities,
 } from '../domain/recommendTwoGroupTest'
 import { testExplanations } from './testExplanations'
+import { DataUploadPanel } from './DataUploadPanel'
 
 type Step = 'start' | 'q1' | 'q2' | 'q3' | 'qSmall' | 'result'
 
@@ -69,9 +70,11 @@ function QuestionScreen(props: {
 export function TwoGroupWizard() {
   const [step, setStep] = useState<Step>('start')
   const [answers, setAnswers] = useState<Partial<TwoGroupAnswers>>({})
+  const [showUpload, setShowUpload] = useState(false)
 
   function reset() {
     setAnswers({})
+    setShowUpload(false)
     setStep('start')
   }
 
@@ -223,6 +226,18 @@ export function TwoGroupWizard() {
       <button type="button" className="primary" onClick={reset}>
         Start over
       </button>
+
+      {rec.covered && (
+        <button
+          type="button"
+          className="secondary"
+          onClick={() => setShowUpload((s) => !s)}
+        >
+          {showUpload ? 'Hide data upload' : 'Upload data'}
+        </button>
+      )}
+
+      {rec.covered && showUpload && <DataUploadPanel testId={rec.testId} />}
     </section>
   )
 }

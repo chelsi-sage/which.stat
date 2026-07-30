@@ -7,6 +7,27 @@ we considered instead. Newest entries at the top. Keep entries short.
 
 ---
 
+### 2026-07-30 — SPEC-004 built: deterministic stats engine + data upload
+
+- **Python stats engine in `stats_engine/`** (scipy), run in the browser via
+  **Pyodide**. First test wired end-to-end: **independent-samples t-test**.
+- **Chelsi's choices:** Pyodide (not a server), CSV first, numbers + plain-English
+  verdict, run-as-asked (assumption checks deferred).
+- **Privacy vs offline nuance:** computation is local so **uploaded data never
+  leaves the browser** (privacy holds now); Pyodide/scipy assets load from CDN on
+  first use, so *full* offline is deferred to the Phase 2 PWA work.
+- **Result screen:** "Upload data" button below "Start over" reveals a
+  file → column-mapping → run → result panel below the recommendation.
+- **Revised two v1 non-goals** (now runs tests + interprets results) — see
+  PRODUCT_VISION.md.
+- **Validation path:** `stats_engine` has pytest golden tests with hand-computed
+  expected values; TS pure logic has Vitest tests; the Pyodide pipeline was
+  proven with a Node smoke run (t = −1.2247, p = 0.288, d = −1.0 — matching by
+  hand). 26 Vitest + 6 pytest passing; build + lint clean.
+- **New deps:** npm pyodide, papaparse (+types); Python scipy, pytest.
+
+---
+
 ### 2026-07-30 — SPEC-003 built: categorical-outcome (chi-square) branch
 
 - The "No, my outcome isn't continuous" answer now continues into a categorical

@@ -45,10 +45,14 @@ the decision tree keeps working.
 To keep scope honest, v1 will **not**:
 
 - Run every statistical test in existence — we start with a small, well-tested set.
-- Interpret results or write conclusions for the user beyond the recommendation.
 - Replace a statistician for complex or high-stakes analyses.
-- Store user data on a server (data upload processing approach TBD in Phase 3).
 - Provide a public hosted URL initially (runs locally first).
+
+**Revised 2026-07-30 (SPEC-004):** two earlier non-goals were consciously
+dropped. v1 now *does* **run the recommended test** on uploaded data and give a
+**plain-English interpretation** of the result — done by deterministic Python
+(scipy) in the browser via Pyodide. Uploaded data is **not** stored on a server
+(computation is local, so it never leaves the browser).
 
 ## Success criteria
 
